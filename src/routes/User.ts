@@ -1,13 +1,15 @@
 import express from "express";
 import { Request, Response  } from "express";
+import * as userController from '../controllers/Usercontroller';
+
+const route : any = express.Router();    
+route.post('/signup' , userController.SignUp);
+route.get('/signin', userController.Login)
 
 
-const routes = express.Router();    
 
 
 
 
 
-
-
-export default routes
+export default route
