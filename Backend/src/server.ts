@@ -5,6 +5,7 @@ import Logging from './library/Logging'
 import { urlencoded, json } from "body-parser";
 import cookieParser from "cookie-parser";
 import dotenv from 'dotenv';
+import errorHandling from './middlewares/errorHandling';
 
 dotenv.config()
 
@@ -13,7 +14,7 @@ const app = express()
 app.use(json());
 app.use(urlencoded({ extended: true }));
 app.use(cookieParser());
-
+app.use(errorHandling)
 
 import routeuser from "./routes/User";
 
@@ -32,5 +33,5 @@ mongoose.connect(config.mongo.url, { retryWrites: true, w: 'majority' })
 
 app.listen(config.server.port, () => {
     Logging.info(`server is running on port ${config.server.port}`);
-});    
+});
 

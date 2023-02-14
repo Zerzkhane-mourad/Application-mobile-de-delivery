@@ -1,21 +1,20 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { User } from '../models/Usermodel';
 import { config } from '../config/config'
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import HttpException from '../library/HttpException';
 
 export default class UserAuthentication {
 
-
-
-    public static signUp = async (req: Request, res: Response) => {
+    public static signUp = async (req: Request, res: Response, next: NextFunction) => {
         const { body } = req;
         const hashPassword : any = await bcrypt.hash(req.body.password, 10);
         const chekemail = await User.findOne({ email: req.body.email });
         if (chekemail) {
-            return res.status(400).json({
-                error: 'Email Not Found '
-            });
+
+            next(new HttpException(400, "Email earldy existe"))
+ 
         } else {
             const user = await User.create({
                 ...body,
@@ -30,7 +29,7 @@ export default class UserAuthentication {
         }
     }
 
-    public static login = async (req: Request, res: Response): Promise<Response> => {
+    public static login = async (req: Request, res: Response , next : NextFunction): Promise<Response> => {
 
         const user : any = await User.findOne({ email: req.body.email })
         if (!user)
