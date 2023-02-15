@@ -6,6 +6,7 @@ import { urlencoded, json } from "body-parser";
 import cookieParser from "cookie-parser";
 import dotenv from 'dotenv';
 import errorHandling from './middlewares/errorHandling';
+import ExpressValidator = require('express-validator');
 
 dotenv.config()
 
@@ -15,6 +16,7 @@ app.use(json());
 app.use(urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(errorHandling)
+
 
 import routeuser from "./routes/User";
 

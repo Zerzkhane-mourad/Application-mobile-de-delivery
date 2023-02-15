@@ -24,7 +24,7 @@ export default class UserAuthentication {
             try {
                 res.send('created succflly');
             } catch {
-                res.status(400).send('error creating');
+               next(new HttpException(400, "Error creating"));
             }
         }
     }
@@ -33,16 +33,13 @@ export default class UserAuthentication {
 
         const user : any = await User.findOne({ email: req.body.email })
         if (!user)
-            return res.status(400).send({
-                error: 'Email Not Found'
-            })
 
+            next( new HttpException(400, "Email Not Found") )
 
         const password : any = await bcrypt.compare(req.body.password, user.password)
         if (!password)
-            return res.status(400).send({
-                error: 'Password Not Found'
-            })
+
+            next ( new HttpException(400, "Password Not Found"))
 
         const token = jwt.sign({ _id: user._id, role: user.role }, config.token.token_secret as string)
         res.cookie('token', token)
