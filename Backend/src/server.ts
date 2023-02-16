@@ -1,39 +1,64 @@
-import express from 'express'
-import mongoose from 'mongoose'
+import cookieParser from 'cookie-parser';
+import { urlencoded, json } from "body-parser";
+import express from 'express';
+import mongoose from 'mongoose';
 import { config } from './config/config'
 import Logging from './library/Logging'
-import { urlencoded, json } from "body-parser";
-import cookieParser from "cookie-parser";
 import dotenv from 'dotenv';
 import errorHandling from './middlewares/errorHandling';
 import ExpressValidator = require('express-validator');
-
+import routeuser from "./routes/User";
 dotenv.config()
 
-const app = express()
+class App {
 
-app.use(json());
-app.use(urlencoded({ extended: true }));
-app.use(cookieParser());
-app.use(errorHandling)
+    public app: express.Application
+
+    public listen() {
+
+        this.app.listen(config.server.port, () => {
+            Logging.info(`server is running on port ${config.server.port}`);
+        });
+
+    }
+    
+    constructor() {
+        this.app = express();
+
+        this.connectToTheDatabase();
+        this.initializeMiddlewares();
+        this.initializeErrorHandling();
+        this.initializeRoute();
+        this.listen()
+    }
+
+    private initializeMiddlewares() {
+        this.app.use(json());
+        this.app.use(cookieParser());
+        this.app.use(urlencoded({ extended: true }));
+    }
 
 
-import routeuser from "./routes/User";
+    private initializeErrorHandling() {
+        this.app.use(errorHandling);
+    }
 
-app.use('/api/user', routeuser)
+    private initializeRoute() {
+        this.app.use('/api/user', routeuser)
+    }
 
+    private connectToTheDatabase() {
 
+        mongoose.connect(config.mongo.url, { retryWrites: true, w: 'majority' })
+            .then(() => {
+                Logging.info("connected to base donne")
+            })
+            .catch((err) => {
+                Logging.error(err)
+            })
 
-mongoose.connect(config.mongo.url, { retryWrites: true, w: 'majority' })
-    .then(() => {
-        Logging.info("connected to base donne")
-    })
-    .catch((err) => {
-        Logging.error(err)
-    })
+    }
 
+}
 
-app.listen(config.server.port, () => {
-    Logging.info(`server is running on port ${config.server.port}`);
-});
-
+new App
