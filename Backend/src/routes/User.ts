@@ -5,7 +5,7 @@ import { UserSigninValidator } from "../middlewares/userValidator";
 const route : any = express.Router();    
 
 route.post('/signup', UserAuthentication.signUp);
-route.get('/signin', UserAuthentication.login)
+route.post('/signin', UserAuthentication.login)
 
 
 

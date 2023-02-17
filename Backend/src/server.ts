@@ -45,6 +45,7 @@ class App {
 
     private initializeRoute() {
         this.app.use('/api/user', routeuser)
+        
     }
 
     private connectToTheDatabase() {
